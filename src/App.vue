@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import axios from "axios";
 
 import Header from "@/components/Header.vue";
@@ -8,15 +8,42 @@ import CardList from "@/components/CardList.vue";
 
 // Use reactive state for saving data, mean ref()
 const items = ref([]);
+const filters = reactive({
+    sortBy: 'title',
+    searchQuery: ''
+}
+);
 
-onMounted(async () => {
+const onChangeSearch = (e) => {
+  filters.searchQuery = e.target.value
+}
+const onChangeSort = (e) => {
+  filters.sortBy = e.target.value
+}
+
+const fetchItems = async () => {
   try {
-    const { data } = await axios.get('https://84279c15e5027837.mokky.dev/items')
+    const params = {
+      sortBy: filters.sortBy
+    }
+
+    if (filters.searchQuery) {
+      params.title = `*${filters.searchQuery}*`
+    }
+
+    const { data } = await axios.get(`https://84279c15e5027837.mokky.dev/items`, {
+      params
+    })
+
     items.value = data
   } catch (e) {
     console.log(e)
   }
-})
+}
+
+onMounted(fetchItems)
+watch(filters, fetchItems)
+
 </script>
 
 <template>
@@ -29,14 +56,15 @@ onMounted(async () => {
         <h2 class="text-3xl font-bold">All sneakers</h2>
 
         <div class="flex gap-4">
-          <select name="" id="" class="py-2 px-3 border rounded-md">
-            <option value="">Sort by</option>
-            <option value="">Price: low to high</option>
-            <option value="">Price: high to low</option>
+          <select @change="onChangeSort" class="py-2 px-3 border rounded-md">
+            <option value="title">Name</option>
+            <option value="price">Price: low to high</option>
+            <option value="-price">Price: high to low</option>
           </select>
           <div class="relative">
             <img class="absolute left-4 top-3" src="/search.svg" alt="">
             <input
+                @input="onChangeSearch"
                 type="text"
                 placeholder="Search..."
                 class="border rounded-md outline-none focus:border-gray-400 pl-10 pr-4 py-2"
