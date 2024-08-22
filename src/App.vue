@@ -1,8 +1,22 @@
 <script setup>
+import {onMounted, ref} from "vue";
+import axios from "axios";
+
 import Header from "@/components/Header.vue";
 import CardList from "@/components/CardList.vue";
 // import Drawer from "@/components/Drawer.vue";
 
+// Use reactive state for saving data, mean ref()
+const items = ref([]);
+
+onMounted(async () => {
+  try {
+    const { data } = await axios.get('https://84279c15e5027837.mokky.dev/items')
+    items.value = data
+  } catch (e) {
+    console.log(e)
+  }
+})
 </script>
 
 <template>
@@ -31,7 +45,7 @@ import CardList from "@/components/CardList.vue";
         </div>
       </div>
 
-      <CardList />
+      <CardList :items="items" />
     </div>
 
   </div>
