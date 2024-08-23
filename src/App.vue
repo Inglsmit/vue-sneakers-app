@@ -9,9 +9,9 @@ import CardList from "@/components/CardList.vue";
 // Use reactive state for saving data, mean ref()
 const items = ref([]);
 const filters = reactive({
-    sortBy: 'title',
-    searchQuery: ''
-}
+      sortBy: 'title',
+      searchQuery: ''
+    }
 );
 
 const onChangeSearch = (e) => {
@@ -19,6 +19,42 @@ const onChangeSearch = (e) => {
 }
 const onChangeSort = (e) => {
   filters.sortBy = e.target.value
+}
+const addToFavorite = async (item) => {
+  try {
+    if(item.isFavorite) {
+      item.isFavorite = false
+
+      await axios.delete(`https://84279c15e5027837.mokky.dev/favorites/${item.favoriteId}`)
+      item.favoriteId = null
+    }else{
+      const obj = {
+        itemId: item.id
+      }
+      item.isFavorite = true
+
+      const { data } = await axios.post(`https://84279c15e5027837.mokky.dev/favorites`, obj)
+      item.favoriteId = data.id
+    }
+  }catch (e) {
+    console.log('addToFavorite', e)
+  }
+}
+const fetchFavorites = async () => {
+  try {
+    const {data: favorites} = await axios.get(`https://84279c15e5027837.mokky.dev/favorites`)
+    items.value = items.value.map((obj) => {
+      return {
+        ...obj,
+        isFavorite: favorites.some(fav => fav.itemId === obj.id),
+        favoriteId: favorites.find(fav => fav.itemId === obj.id)?.id
+      }
+    })
+
+    console.log('withFavorites', items.value)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const fetchItems = async () => {
@@ -31,23 +67,32 @@ const fetchItems = async () => {
       params.title = `*${filters.searchQuery}*`
     }
 
-    const { data } = await axios.get(`https://84279c15e5027837.mokky.dev/items`, {
+    const {data} = await axios.get(`https://84279c15e5027837.mokky.dev/items`, {
       params
     })
 
-    items.value = data
+    items.value = data.map((obj) => {
+      return {
+        ...obj,
+        favoriteId: null,
+        isFavorite: false,
+        isAdded: false,
+      }
+    })
   } catch (e) {
     console.log(e)
   }
 }
 
-onMounted(fetchItems)
+onMounted(async () => {
+  await fetchItems();
+  await fetchFavorites();
+})
 watch(filters, fetchItems)
-
 </script>
 
 <template>
-<!--  <Drawer />-->
+  <!--  <Drawer />-->
   <div class="w-4/5 m-auto bg-white min-h-screen rounded-xl shadow-xl mt-14">
     <Header/>
 
@@ -73,7 +118,7 @@ watch(filters, fetchItems)
         </div>
       </div>
 
-      <CardList :items="items" />
+      <CardList :items="items" @addToFavorite="addToFavorite" />
     </div>
 
   </div>

@@ -1,21 +1,16 @@
 <script setup>
-import { ref } from 'vue';
 
 defineProps({
+  id: Number,
   title: String,
   imageUrl: String,
   price: Number,
+  favoriteId: Number,
   isFavorite: Boolean,
   isAdded: Boolean,
   onClickAdd: Function,
   onClickFavorite: Function
 });
-
-const isFavorite = ref(false);
-
-const onClickFavorite = () => {
-  isFavorite.value = !isFavorite.value;
-};
 </script>
 
 <template>
