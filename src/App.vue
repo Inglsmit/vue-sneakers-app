@@ -1,10 +1,10 @@
 <script setup>
-import {onMounted, reactive, ref, watch} from "vue";
+import {onMounted, provide, reactive, ref, watch} from "vue";
 import axios from "axios";
 
 import Header from "@/components/Header.vue";
 import CardList from "@/components/CardList.vue";
-// import Drawer from "@/components/Drawer.vue";
+import Drawer from "@/components/Drawer.vue";
 
 // Use reactive state for saving data, mean ref()
 const items = ref([]);
@@ -13,7 +13,15 @@ const filters = reactive({
       searchQuery: ''
     }
 );
+const drawerOpened = ref(false);
 
+const drawerOpen = () => {
+  drawerOpened.value = true
+}
+
+const drawerClose = () => {
+  drawerOpened.value = false
+}
 const onChangeSearch = (e) => {
   filters.searchQuery = e.target.value
 }
@@ -89,12 +97,18 @@ onMounted(async () => {
   await fetchFavorites();
 })
 watch(filters, fetchItems)
+
+provide('drawerToggle', {
+  drawerOpen,
+  drawerClose
+})
 </script>
 
 <template>
-  <!--  <Drawer />-->
+   <Drawer v-if="drawerOpened" />
+
   <div class="w-4/5 m-auto bg-white min-h-screen rounded-xl shadow-xl mt-14">
-    <Header/>
+    <Header @drawer-open="drawerOpen" />
 
     <div class="p-10">
       <div class="flex justify-between items-center mb-8">
@@ -118,7 +132,7 @@ watch(filters, fetchItems)
         </div>
       </div>
 
-      <CardList :items="items" @addToFavorite="addToFavorite" />
+      <CardList :items="items" @add-to-favorite="addToFavorite" />
     </div>
 
   </div>

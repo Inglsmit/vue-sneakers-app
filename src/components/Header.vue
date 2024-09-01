@@ -1,5 +1,5 @@
 <script setup>
-
+  defineEmits(['drawerOpen'])
 </script>
 
 <template>
@@ -13,7 +13,7 @@
       </div>
     </div>
     <ul class="flex items-center gap-10">
-      <li class="flex items-center gap-3 text-gray-500 cursor-pointer hover:text-black">
+      <li @click="$emit('drawerOpen')" class="flex items-center gap-3 text-gray-500 cursor-pointer hover:text-black">
         <img src="/cart.svg" alt="Cart">
         <b>$200</b>
       </li>
