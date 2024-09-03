@@ -8,6 +8,7 @@ import Drawer from "@/components/Drawer.vue";
 
 // Use reactive state for saving data, mean ref()
 const items = ref([]);
+const cart = ref([]);
 const filters = reactive({
       sortBy: 'title',
       searchQuery: ''
@@ -28,6 +29,25 @@ const onChangeSearch = (e) => {
 const onChangeSort = (e) => {
   filters.sortBy = e.target.value
 }
+
+const addToCart = (item) => {
+  cart.value.push(item)
+  item.isAdded = true
+}
+
+const removeFromCart = (item) => {
+  cart.value.splice(cart.value.indexOf(item), 1)
+  item.isAdded = false
+}
+
+const onClickAddPlus = (item) => {
+  if (!item.isAdded) {
+    addToCart(item)
+  } else {
+    removeFromCart(item)
+  }
+}
+
 const addToFavorite = async (item) => {
   try {
     if(item.isFavorite) {
@@ -58,8 +78,6 @@ const fetchFavorites = async () => {
         favoriteId: favorites.find(fav => fav.itemId === obj.id)?.id
       }
     })
-
-    console.log('withFavorites', items.value)
   } catch (e) {
     console.log(e)
   }
@@ -98,7 +116,10 @@ onMounted(async () => {
 })
 watch(filters, fetchItems)
 
-provide('drawerToggle', {
+provide('cartProvider', {
+  cart,
+  addToCart,
+  removeFromCart,
   drawerOpen,
   drawerClose
 })
@@ -132,7 +153,7 @@ provide('drawerToggle', {
         </div>
       </div>
 
-      <CardList :items="items" @add-to-favorite="addToFavorite" />
+      <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="onClickAddPlus" />
     </div>
 
   </div>

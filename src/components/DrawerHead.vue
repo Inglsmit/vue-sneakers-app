@@ -1,7 +1,7 @@
 <script setup>
 import {inject} from "vue";
 
-const { drawerClose } = inject('drawerToggle')
+const { drawerClose } = inject('cartProvider')
 </script>
 
 <template>

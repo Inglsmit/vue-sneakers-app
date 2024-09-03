@@ -1,29 +1,17 @@
 <script setup>
 import CartItem from "@/components/CartItem.vue";
+import {inject} from "vue";
 
+const { cart, removeFromCart } = inject('cartProvider')
 </script>
 
 <template>
   <div class="flex flex-col gap-5">
     <CartItem
-        title="Mans Sneakers Nike Blazer Mid Suede"
-        price="300"
-        img="/sneakers/sneakers-1.jpg"
-    />
-    <CartItem
-        title="Mans Sneakers Nike Blazer Mid Suede"
-        price="300"
-        img="/sneakers/sneakers-1.jpg"
-    />
-    <CartItem
-        title="Mans Sneakers Nike Blazer Mid Suede"
-        price="300"
-        img="/sneakers/sneakers-1.jpg"
-    />
-    <CartItem
-        title="Mans Sneakers Nike Blazer Mid Suede"
-        price="300"
-        img="/sneakers/sneakers-1.jpg"
+        v-for="item in cart"
+        :key="item.id"
+        :item="item"
+        @on-click-remove="() => removeFromCart(item)"
     />
   </div>
 </template>
