@@ -1,6 +1,11 @@
 <script setup>
 import DrawerHead from "@/components/DrawerHead.vue";
 import CartItemList from "@/components/CartItemList.vue";
+
+defineProps({
+  totalPrice: Number,
+  vatPrice: Number
+})
 </script>
 
 <template>
@@ -18,13 +23,13 @@ import CartItemList from "@/components/CartItemList.vue";
           <div class="flex items-end gap-2">
             <span>Total:</span>
             <div class="flex-1 border-b border-dashed" />
-            <span class="font-bold">$300</span>
+            <span class="font-bold">${{ totalPrice }}</span>
           </div>
 
           <div class="flex items-end gap-2">
             <span>Taxes 5%:</span>
             <div class="flex-1 border-b border-dashed" />
-            <span class="font-bold">$15</span>
+            <span class="font-bold">${{ vatPrice }}</span>
           </div>
         </div>
 

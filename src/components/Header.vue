@@ -1,5 +1,9 @@
 <script setup>
   defineEmits(['drawerOpen'])
+
+  defineProps({
+    totalPrice: Number
+  })
 </script>
 
 <template>
@@ -15,7 +19,7 @@
     <ul class="flex items-center gap-10">
       <li @click="$emit('drawerOpen')" class="flex items-center gap-3 text-gray-500 cursor-pointer hover:text-black">
         <img src="/cart.svg" alt="Cart">
-        <b>$200</b>
+        <b>${{ totalPrice }}</b>
       </li>
 
       <li class="flex items-center gap-3 text-gray-500 cursor-pointer hover:text-black">
