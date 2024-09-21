@@ -1,6 +1,7 @@
 <script setup>
 import DrawerHead from "@/components/DrawerHead.vue";
 import CartItemList from "@/components/CartItemList.vue";
+import InfoBlock from "@/components/InfoBlock.vue";
 
 const emit = defineEmits(['createOrder'])
 
@@ -18,8 +19,16 @@ defineProps({
       class="flex flex-col justify-between fixed z-10 top-0 h-full right-0 w-96 bg-white px-10 py-7"
   >
     <DrawerHead />
-    <div class="flex flex-col flex-1 justify-between">
 
+    <div v-if="!totalPrice" class="flex h-full items-center">
+      <InfoBlock
+          imgUrl="/package-icon.png"
+          title="Cart Empty"
+          description="Please add some items to the cart"
+      />
+    </div>
+
+    <div v-else class="flex flex-col flex-1 justify-between">
       <CartItemList />
 
       <div>
