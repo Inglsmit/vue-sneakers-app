@@ -2,9 +2,13 @@
 import DrawerHead from "@/components/DrawerHead.vue";
 import CartItemList from "@/components/CartItemList.vue";
 
+const emit = defineEmits(['createOrder'])
+
 defineProps({
   totalPrice: Number,
-  vatPrice: Number
+  vatPrice: Number,
+  disabledBtn: Boolean,
+  // isLoadingOrder: Boolean
 })
 </script>
 
@@ -34,7 +38,8 @@ defineProps({
         </div>
 
         <button
-            disabled=""
+            :disabled="disabledBtn"
+            @click="emit('createOrder')"
             class="flex justify-center items-center gap-3 w-full py-3 mt-10 bg-lime-500 text-white rounded-xl transition active:bg-lime-700 hover:bg-lime-600 disabled:bg-slate-300"
         >
           Checkout

@@ -18,6 +18,26 @@ const drawerOpened = ref(false);
 const totalPrice = computed( () => cart.value.reduce((acc, item) => acc + item.price, 0));
 const vatPrice = computed(() => Math.round(totalPrice.value * 0.05))
 
+const isLoadingOrder = ref(false);
+const disabledCheckoutOrderBtn = computed(() => isLoadingOrder.value || cart.value.length === 0)
+
+const createOrder = async () => {
+  try {
+    isLoadingOrder.value = true
+    const { data } = await axios.post(`https://84279c15e5027837.mokky.dev/orders`, {
+      items: cart.value,
+      totalPrice: totalPrice.value
+    })
+
+    cart.value = []
+    return data
+  } catch (e) {
+    console.log(e)
+  } finally {
+    isLoadingOrder.value = false
+  }
+}
+
 const drawerOpen = () => {
   drawerOpened.value = true
 }
@@ -117,6 +137,14 @@ onMounted(async () => {
   await fetchFavorites();
 })
 watch(filters, fetchItems)
+watch(cart, () => {
+  items.value = items.value.map((item) => {
+    return {
+      ...item,
+      isAdded: false
+    }
+  })
+})
 
 provide('cartProvider', {
   cart,
@@ -128,7 +156,13 @@ provide('cartProvider', {
 </script>
 
 <template>
-   <Drawer v-if="drawerOpened" :total-price="totalPrice" :vat-price="vatPrice" />
+   <Drawer
+       v-if="drawerOpened"
+       :total-price="totalPrice"
+       :vat-price="vatPrice"
+       :disabled-btn="disabledCheckoutOrderBtn"
+       @create-order="createOrder"
+   />
 
   <div class="w-4/5 m-auto bg-white min-h-screen rounded-xl shadow-xl mt-14">
     <Header :total-price="totalPrice" @drawer-open="drawerOpen" />
